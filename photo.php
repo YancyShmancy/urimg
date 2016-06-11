@@ -1,7 +1,7 @@
 <?php
 $getphotoid = $_GET["id"];
-// $username = $_SESSION['username'];
-$username = "james123";
+$username = $_SESSION['username'];
+// $username = "james123";
 
 function runQuery($query_text) {
 	// Define a return array
@@ -21,9 +21,6 @@ function runQuery($query_text) {
 $photoquery = "SELECT * FROM urimg_photos WHERE id='" . $getphotoid . "'";
 
 $photoarr = runQuery($photoquery);
-echo "<pre>";
-print_r($photoarr);
-echo "</pre>";
 ?>
 
 <!DOCTYPE html>
@@ -41,16 +38,16 @@ echo "</pre>";
 		</header>
 		<div class="container">
 			<h2><?php echo @$photoarr[0][title]; ?></h2>
-			<div class="row">
+			<div class="row z-depth-1">
 				<div class="col m8 s12">
-					<?php echo "<img class='responsive-img' src='".@$photoarr[0][imagelink]."' />"?>
+					<?php echo "<p><img class='responsive-img' src='".@$photoarr[0][imagelink]."' /></p>"?>
 				</div>
 				<div class="col m4 s12">
 					<p><?php echo @$photoarr[0][description]; ?></p>
 				</div>
 			</div>
 			<div class="row">
-				<form id="add-comment-form" class="col s12" onsubmit="return false;">
+				<form id="add-comment-form" class="col s12 z-depth-1" onsubmit="return false;">
 					<div class="row">
 						<div class="input-field col s12">
 							<textarea id="add-comment-text" class="materialize-textarea"></textarea>
@@ -64,40 +61,30 @@ echo "</pre>";
 					</div>
 				</form>
 			</div>
-			<div class="row">
-				<div class="col s12">
-					<div id="comment-list" class="row">
+			<div id="comment-list" class="row">
+				
+				
+				<?php
+					// get all comments from db
+					
+					$commentquery = "SELECT * FROM urimg_comments WHERE photo_id='" . $getphotoid . "' ORDER BY created DESC";
+					$conn = mysqli_connect("localhost", "ryan.rodd", "Circus123!", "student-database");
+					$commentresult = mysqli_query($conn, $commentquery);
 						
-						
-						<?php
-							// get all comments from db
-							
-							$commentquery = "SELECT * FROM urimg_comments WHERE photo_id='" . $getphotoid . "' ORDER BY created DESC";
-							$conn = mysqli_connect("localhost", "ryan.rodd", "Circus123!", "student-database");
-							$commentresult = mysqli_query($conn, $commentquery);
-							
-							
-							if(empty($commentresult)) {
-								echo ("No comments yet.");
-							} else {
-								
-								while($commentrow = mysqli_fetch_array($commentresult, MYSQLI_ASSOC))
-							    {
-								  $username=$commentrow['username'];
-								  $comment=$commentrow['text'];
-							      $time=$commentrow['created'];
-						?>
-								    <div class="comment-item col s12"> 
-									  <p><?php echo $username; ?></p>
-									  <p class=""><?php echo $time; ?></p>
-								      <p><?php echo $comment; ?></p>	
-									</div>
-						<?php
-								}
-							}
-						?>
-					</div>
-				</div>
+					while($commentrow = mysqli_fetch_array($commentresult, MYSQLI_ASSOC))
+				    {
+					  $username=$commentrow['username'];
+					  $comment=$commentrow['text'];
+				      $time=$commentrow['created'];
+				?>
+					    <div class="comment-item col s12 z-depth-1">
+						  <p><?php echo $username; ?></p>
+						  <p class=""><?php echo $time; ?></p>
+					      <p><?php echo $comment; ?></p>	
+						</div>
+				<?php
+					}
+				?>
 			</div>
 		</div>
 		<script src="https://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
@@ -116,6 +103,7 @@ echo "</pre>";
 					};
 					$.post('handle_comment.php', postData, function(result) {
 						$('#comment-list').prepend(result);
+						$('.tofade').fadeIn(1000);
 						$('#add-comment-form')[0].reset();
 					});
 				});
