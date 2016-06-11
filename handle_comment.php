@@ -17,7 +17,7 @@
 		      $time=$row['created'];
 		  ?>
 		      <div class="comment-item col s12 z-depth-1 tofade" style="display:none">
-			    <p>Posted By:<?php echo $name; ?></p>
+			    <p class="teal-text"><?php echo $name; ?></p>
 		        <p><?php echo $comment; ?></p>	
 			    <p><?php echo $time; ?></p>
 			  </div>

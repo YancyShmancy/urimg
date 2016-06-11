@@ -78,7 +78,7 @@ $photoarr = runQuery($photoquery);
 				      $time=$commentrow['created'];
 				?>
 					    <div class="comment-item col s12 z-depth-1">
-						  <p><?php echo $username; ?></p>
+						  <p class="teal-text"><?php echo $username; ?></p>
 						  <p class=""><?php echo $time; ?></p>
 					      <p><?php echo $comment; ?></p>	
 						</div>
