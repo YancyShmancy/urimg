@@ -1,5 +1,7 @@
 <?php
 $getphotoid = $_GET["id"];
+$username = $_SESSION['username'];
+// $username = "james123";
 
 function runQuery($query_text) {
 	// Define a return array
@@ -16,11 +18,9 @@ function runQuery($query_text) {
 	return $ret;
 }
 
-$query = "SELECT * FROM urimg_photos WHERE id='" . $getphotoid . "'";
+$photoquery = "SELECT * FROM urimg_photos WHERE id='" . $getphotoid . "'";
 
-$photoarr = runQuery($query);
-
-
+$photoarr = runQuery($photoquery);
 ?>
 
 <!DOCTYPE html>
@@ -38,22 +38,16 @@ $photoarr = runQuery($query);
 		</header>
 		<div class="container">
 			<h2><?php echo @$photoarr[0][title]; ?></h2>
-			<div class="row">
+			<div class="row z-depth-1">
 				<div class="col m8 s12">
-					<?php echo "<img class='responsive-img' src='".@$photoarr[0][imagelink]."' />"?>
+					<?php echo "<p><img class='responsive-img' src='".@$photoarr[0][imagelink]."' /></p>"?>
 				</div>
 				<div class="col m4 s12">
 					<p><?php echo @$photoarr[0][description]; ?></p>
 				</div>
 			</div>
 			<div class="row">
-				<form id="add-comment-form" class="col s12" onsubmit="return false;">
-					<div class="row">
-						<div class="input-field col s6">
-							<input id="add-comment-name" type="text" class="validate"></textarea>
-							<label for="add-comment-name">Name</label>
-						</div>
-					</div>
+				<form id="add-comment-form" class="col s12 z-depth-1" onsubmit="return false;">
 					<div class="row">
 						<div class="input-field col s12">
 							<textarea id="add-comment-text" class="materialize-textarea"></textarea>
@@ -67,49 +61,53 @@ $photoarr = runQuery($query);
 					</div>
 				</form>
 			</div>
-			<div class="row">
-				<div class="col s12">
-					<div id="comment-list"></div>
-				</div>
+			<div id="comment-list" class="row">
+				
+				
+				<?php
+					// get all comments from db
+					
+					$commentquery = "SELECT * FROM urimg_comments WHERE photo_id='" . $getphotoid . "' ORDER BY created DESC";
+					$conn = mysqli_connect("localhost", "ryan.rodd", "Circus123!", "student-database");
+					$commentresult = mysqli_query($conn, $commentquery);
+						
+					while($commentrow = mysqli_fetch_array($commentresult, MYSQLI_ASSOC))
+				    {
+					  $username=$commentrow['username'];
+					  $comment=$commentrow['text'];
+				      $time=$commentrow['created'];
+				?>
+					    <div class="comment-item col s12 z-depth-1">
+						  <p class="teal-text"><?php echo $username; ?></p>
+						  <p class=""><?php echo $time; ?></p>
+					      <p><?php echo $comment; ?></p>	
+						</div>
+				<?php
+					}
+				?>
 			</div>
 		</div>
-	<script src="https://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
-	<script>
-		$(document).ready(function() {
-			console.log('oshit')
-			$('#add-comment-form').on('submit', function(e) {
-				var name = $('#add-comment-name').val();
-				var text = $('#add-comment-text').val();
-				var $name = $('<p>').addClass('comment-name').append(name);
-				var $text = $('<p>').addClass('comment-text').append(text);
-				var $newcomment = $('<div>').append($name).append($text).css('border', '1px solid black');
-				// var postData = {
-				// 	"name": name,
-				// 	"text": text
-				// };
-				// $.post("handle_comment.php", postData, function(result) {
-					
-				// })
-				$('#comment-list').append($newcomment);
-				$('#add-comment-form').trigger('reset');
-				
+		<script src="https://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+		<script>
+			$(document).ready(function() {
+				console.log('oshit')
+				$('#add-comment-form').on('submit', function(e) {
+					var username = "<?php echo $username ?>";
+					var text = $('#add-comment-text').val();
+					var photoid = <?php echo $getphotoid ?>;
+					var postData = {
+					'username': username,
+					'text': text,
+					'photoid': photoid
+					};
+					$.post('handle_comment.php', postData, function(result) {
+						$('#comment-list').prepend(result);
+						$('.tofade').fadeIn(1000);
+						$('#add-comment-form')[0].reset();
+					});
+				});
 			});
-		});
-	</script>
+		</script>
 	</body>
 </html>
-
-<!--
-	
-4. Create a page that displays the details for each photo (photo.php) that:
-
-	a. Displays only the photo that was clicked on including it's title and description (+$1000)
-
-	b. Has an HTML form to submit a comment on a photo (+$500)
-
-	c. Display's comments submitted for that photo (+$500)
-
-	d. Allow user to click a button to like/upvote the photo (+$500)
-	
--->
