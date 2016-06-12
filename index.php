@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="./main.css">
 </head>
 <body>
-    <?php session_start(); 
+    <?php session_start();
+		$session_user = $_SESSION['username'];
     	$num;
 		
 		function runQuery($query_text) {
@@ -29,7 +30,7 @@
 			return $ret;
 		} 
 		
-		$userArr = runQuery("SELECT * FROM urimg_photos ORDER BY score");
+		$userArr = runQuery("SELECT * FROM urimg_photos ORDER BY score DESC");
 	?>
     
     <header class="header row z-depth-1 teal p-b-3">
@@ -37,6 +38,7 @@
              <a href="index.php"><h1 class="white-text center-align">URIMG</h1></a>
         </div>
         <div class="col s3 center-align">
+        	<?php echo "<a href='./user.php?u=$session_user' class='red-text text-lighten-3'>$session_user</a>"; ?><br/>
     		<a href="logout.php" class="white-text">Logout</a>
         </div>
         <div class="col s12 center-align">
@@ -65,7 +67,7 @@
 						<p class='score-text teal-text center-align'>
 						<i class='material-icons grey-text downvote'>call_received</i> <span class='score' value='$score'>$score</span> <i class='material-icons grey-text upvote'>call_made</i>
 						</p>
-						<p>Posted by <span class='teal-text'>$user</span></p>
+						<p>Posted by <a class='teal-text' href='./user.php?u=$user'>$user</a></p>
 						</div></div>";
 				} 
 			} else {
