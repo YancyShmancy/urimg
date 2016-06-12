@@ -1,0 +1,48 @@
+.p-b-3 {
+    padding-bottom: 30px !important;
+}
+
+.p-l-1 {
+    padding-left: 10px !important;
+}
+
+#loginButton {
+    margin-left: 10px;
+}
+
+.header .s3 {
+	padding: 20px 0 !important;
+}
+
+.fail {
+	color: red;
+}
+
+a.photo-link {
+	float: left;
+	height: 200px !important;
+	overflow: hidden;
+	background-color: black;
+}
+
+.home-card {
+	padding: 0 !important;
+}
+
+.home-card h2,
+.home-card p {
+	padding: 0 20px;
+}
+
+.score-text {
+	float: left;
+	width: 100%;
+	padding: 10px 0;
+}
+
+i.material-icons {
+	cursor: pointer;
+}
+
+
+
